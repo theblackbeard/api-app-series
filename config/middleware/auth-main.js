@@ -25,22 +25,27 @@ exports.requireLogin = (req, res, next)=> {
 };
 
 let _getToken = function(headers){
-     if(headers && headers.authorization){
-        return headers.authorization;
-     }else{
-         return null;
-     }
+    if(headers && headers.authorization){
+        var parted = headers.authorization.split(' ');
+        if (parted.length === 2) {
+            return parted[1];
+        } else {
+            return null;
+        }
+    } else {
+        return null;
+    }
 };
 
 let _decodedThis = function(_token, callback){
         setTimeout(function(){
         JWT.verify(_token, config.c.SECRET, function(err, userInfo){
             if(userInfo !== undefined){
-                let _user = ({  _id: userInfo._doc._id, 
-                                name: userInfo._doc.name, 
+                let _user = ({  _id: userInfo._doc._id,
+                                name: userInfo._doc.name,
                                 email: userInfo._doc.email
                             });
-                callback(_user);    
+                callback(_user);
             }else{
                 return callback(null);
             }

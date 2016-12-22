@@ -11,18 +11,13 @@ const
 ,   app = express();
 
 require('./config/database-mongoose')(config.c);
+require('./config/middleware/local-passport');
 
 app.use(parser.urlencoded({ extended: false }));
 app.use(parser.json());
 app.use(morgan('dev'));
 app.use('/api', routes);
 
-
+app.use(passport.initialize());
 app.listen(3000);
 console.log('Listening on port 3000');
-
-
-
-
-
-

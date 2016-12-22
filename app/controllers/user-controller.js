@@ -46,7 +46,7 @@ exports.edit = (req, res) => {
 
 
 exports.remove = (req, res) => {
-  User.remove(req.user, (err, result) => {
+  User.remove({_id: req.user._id}, (err, result) => {
       if(err) return res.json(err);
       return res.json(result);
   })
@@ -62,17 +62,17 @@ exports.auth = (req, res) => {
       user.comparePassword(req.body.password, (err, isMatch) => {
          if(isMatch && !err){
            let token = JWT.sign(user, config.c.SECRET, { expiresIn: '24h'});
-           return res.json({token: token});
+           return res.json({'success': true, token: 'JWT ' + token});
          }else{
              return res.json({success: false, result: 'Falha na autenticação, senha incorreta'});
-         }  
+         }
       });
     }
   });
 };
 
 exports.profile = (req, res) => {
-   const token = req.headers.authorization;
+   const token = _getToken(req.headers);
   if(token){
    JWT.verify(token, config.c.SECRET, function(err, profileInfo) {
       if(profileInfo !== undefined) return res.json({success: true, profile: profileInfo._doc});
@@ -80,7 +80,7 @@ exports.profile = (req, res) => {
     });
   }else{
     return res.json({success: false, profile: 0})
-  } 
+  }
 };
 
 
@@ -92,3 +92,16 @@ exports.userExists = (req, res) => {
   })
 
 }
+
+let _getToken = function(headers){
+    if(headers && headers.authorization){
+        var parted = headers.authorization.split(' ');
+        if (parted.length === 2) {
+            return parted[1];
+        } else {
+            return null;
+        }
+    } else {
+        return null;
+    }
+};

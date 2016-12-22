@@ -17,7 +17,18 @@ const SerieSchema = new Schema({
         default: "http://i.imgur.com/c00Aoc6.jpg"
     },
 
-   media : [{ type: Schema.Types.ObjectId, ref: 'Season' }],
+  // media : [{ type: Schema.Types.ObjectId, ref: 'Season' }],
+    seasons : [
+      {
+        _id: false,
+        episodes: [
+          {
+            title: String,
+            viewed: { type: Boolean, default: false }
+          }
+        ]
+      }
+    ],
 
     created_at: {
         type: Date,
